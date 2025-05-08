@@ -1,0 +1,232 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="results-section">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card shadow mb-4">
+                <div class="card-header">
+                    <h3 class="mb-0">
+                        <i class="fas fa-clipboard-check me-2"></i>
+                        Your Personalized Therapy Recommendations
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="progress-indicator mb-4">
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">Complete</div>
+                        </div>
+                        <div class="progress-steps">
+                            <div class="progress-step completed">
+                                <div class="step-icon"><i class="fas fa-check"></i></div>
+                                <div class="step-label">Profile</div>
+                            </div>
+                            <div class="progress-step completed">
+                                <div class="step-icon"><i class="fas fa-check"></i></div>
+                                <div class="step-label">Reports</div>
+                            </div>
+                            <div class="progress-step completed">
+                                <div class="step-icon"><i class="fas fa-check"></i></div>
+                                <div class="step-label">Agent</div>
+                            </div>
+                            <div class="progress-step completed">
+                                <div class="step-icon"><i class="fas fa-check"></i></div>
+                                <div class="step-label">Results</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="recommendation-intro mb-4">
+                        <div class="agent-avatar-container">
+                            {% if agent_type == 'allopathy' %}
+                            <div class="agent-avatar allopathy-avatar">
+                                <i class="fas fa-user-md"></i>
+                            </div>
+                            <h4>Allopathic Recommendations</h4>
+                            {% elif agent_type == 'homeopathy' %}
+                            <div class="agent-avatar homeopathy-avatar">
+                                <i class="fas fa-leaf"></i>
+                            </div>
+                            <h4>Homeopathic Recommendations</h4>
+                            {% else %}
+                            <div class="agent-avatar combined-avatar">
+                                <i class="fas fa-balance-scale"></i>
+                            </div>
+                            <h4>Combined Therapy Recommendations</h4>
+                            {% endif %}
+                        </div>
+                        <p class="lead">
+                            Based on your profile and medical data, here are the most suitable therapy options for you.
+                            Each recommendation includes efficacy, compatibility, safety, and cost scores.
+                        </p>
+                    </div>
+                    
+                    <div class="score-explanation mb-4">
+                        <h5>Understanding the Scores</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul class="score-list">
+                                    <li><span class="score-label efficacy">Efficacy</span>: How effective the therapy is for your condition</li>
+                                    <li><span class="score-label compatibility">Compatibility</span>: How well it matches your specific profile</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul class="score-list">
+                                    <li><span class="score-label safety">Safety</span>: Level of risk and potential side effects</li>
+                                    <li><span class="score-label cost">Cost</span>: Relative affordability (higher score = more affordable)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Comparison Chart -->
+                    <div class="comparison-chart mb-4">
+                        <h5>Therapy Comparison</h5>
+                        <div class="chart-container">
+                            <canvas id="therapyComparisonChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Therapy Cards -->
+                    <div class="therapy-cards">
+                        {% for therapy in therapies %}
+                        <div class="therapy-card {{ therapy.therapy_type }}">
+                            <div class="therapy-header">
+                                <div class="therapy-type-badge {{ therapy.therapy_type }}">
+                                    {{ therapy.therapy_type|capitalize }}
+                                </div>
+                                <h4>{{ therapy.therapy_name }}</h4>
+                                <div class="overall-score">
+                                    <div class="score-circle" data-score="{{ therapy.overall_score }}">
+                                        <span class="score-value">{{ therapy.overall_score }}</span>
+                                    </div>
+                                    <span class="score-label">Overall Score</span>
+                                </div>
+                            </div>
+                            
+                            <div class="therapy-description">
+                                <p>{{ therapy.description }}</p>
+                            </div>
+                            
+                            <div class="therapy-scores">
+                                <div class="score-bar">
+                                    <label>Efficacy</label>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ therapy.efficacy_score }}%"></div>
+                                    </div>
+                                    <span class="score-value">{{ therapy.efficacy_score }}</span>
+                                </div>
+                                
+                                <div class="score-bar">
+                                    <label>Compatibility</label>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-info" role="progressbar" style="width: {{ therapy.compatibility_score }}%"></div>
+                                    </div>
+                                    <span class="score-value">{{ therapy.compatibility_score }}</span>
+                                </div>
+                                
+                                <div class="score-bar">
+                                    <label>Safety</label>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-warning" role="progressbar" style="width: {{ therapy.safety_score }}%"></div>
+                                    </div>
+                                    <span class="score-value">{{ therapy.safety_score }}</span>
+                                </div>
+                                
+                                <div class="score-bar">
+                                    <label>Cost</label>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-primary" role="progressbar" style="width: {{ therapy.cost_score }}%"></div>
+                                    </div>
+                                    <span class="score-value">{{ therapy.cost_score }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="therapy-details">
+                                <div class="details-toggle" data-bs-toggle="collapse" data-bs-target="#details-{{ loop.index }}">
+                                    <span>View Details</span>
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                
+                                <div class="collapse" id="details-{{ loop.index }}">
+                                    <div class="details-content">
+                                        {% if therapy.side_effects %}
+                                        <div class="detail-section">
+                                            <h6>Side Effects</h6>
+                                            <ul>
+                                                {% for effect in therapy.side_effects %}
+                                                <li>{{ effect }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        {% endif %}
+                                        
+                                        {% if therapy.contraindications %}
+                                        <div class="detail-section">
+                                            <h6>Contraindications</h6>
+                                            <ul>
+                                                {% for contra in therapy.contraindications %}
+                                                <li>{{ contra }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        {% endif %}
+                                        
+                                        {% if therapy.supporting_evidence %}
+                                        <div class="detail-section">
+                                            <h6>Supporting Evidence</h6>
+                                            <p>{{ therapy.supporting_evidence }}</p>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="disclaimer mt-4">
+                        <div class="alert alert-warning" role="alert">
+                            <h5 class="alert-heading"><i class="fas fa-exclamation-triangle me-2"></i>Important Disclaimer</h5>
+                            <p>
+                                These recommendations are generated by an AI model and should not replace professional medical advice.
+                                Always consult with healthcare providers before starting any new treatment.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons mt-4">
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('main.select_agent') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i> Back to Agent Selection
+                            </a>
+                            <div>
+                                <a href="{{ url_for('api.export_report') }}" id="exportResults" class="btn btn-outline-primary me-2" target="_blank">
+                                    <i class="fas fa-file-export me-2"></i> Export Results as PDF
+                                </a>
+                                <a href="{{ url_for('main.index') }}" class="btn btn-primary">
+                                    <i class="fas fa-home me-2"></i> Start New Analysis
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/therapy_visualization.js') }}"></script>
+<script>
+    // Initialize therapy data for visualization
+    const therapyData = {{ therapies|tojson }};
+    
+    // Initialize chart when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        initTherapyComparisonChart(therapyData);
+        initScoreCircles();
+    });
+</script>
+{% endblock %}

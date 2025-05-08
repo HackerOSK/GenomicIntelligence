@@ -1,0 +1,164 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="agent-selection-section">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h3 class="mb-0">
+                        <i class="fas fa-user-md me-2"></i>
+                        Select Treatment Approach
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="progress-indicator mb-4">
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">Step 3 of 4</div>
+                        </div>
+                        <div class="progress-steps">
+                            <div class="progress-step completed">
+                                <div class="step-icon"><i class="fas fa-check"></i></div>
+                                <div class="step-label">Profile</div>
+                            </div>
+                            <div class="progress-step completed">
+                                <div class="step-icon"><i class="fas fa-check"></i></div>
+                                <div class="step-label">Reports</div>
+                            </div>
+                            <div class="progress-step active">
+                                <div class="step-icon">3</div>
+                                <div class="step-label">Agent</div>
+                            </div>
+                            <div class="progress-step">
+                                <div class="step-icon">4</div>
+                                <div class="step-label">Results</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="entity-summary mb-4">
+                        <h5 class="mb-3">Extracted Information</h5>
+                        <div class="entity-cards">
+                            {% if report_entities.diseases %}
+                            <div class="entity-card">
+                                <div class="entity-icon"><i class="fas fa-virus"></i></div>
+                                <div class="entity-content">
+                                    <h6>Diseases</h6>
+                                    <p>{{ ', '.join(report_entities.diseases) }}</p>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if report_entities.symptoms %}
+                            <div class="entity-card">
+                                <div class="entity-icon"><i class="fas fa-heartbeat"></i></div>
+                                <div class="entity-content">
+                                    <h6>Symptoms</h6>
+                                    <p>{{ ', '.join(report_entities.symptoms) }}</p>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if report_entities.genes %}
+                            <div class="entity-card">
+                                <div class="entity-icon"><i class="fas fa-dna"></i></div>
+                                <div class="entity-content">
+                                    <h6>Genetic Markers</h6>
+                                    <p>{{ ', '.join(report_entities.genes) }}</p>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if report_entities.lab_values %}
+                            <div class="entity-card">
+                                <div class="entity-icon"><i class="fas fa-flask"></i></div>
+                                <div class="entity-content">
+                                    <h6>Lab Values</h6>
+                                    <ul class="lab-value-list">
+                                        {% for lab in report_entities.lab_values %}
+                                        <li>{{ lab.name }}: {{ lab.value }} {{ lab.unit }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if report_entities.medications %}
+                            <div class="entity-card">
+                                <div class="entity-icon"><i class="fas fa-pills"></i></div>
+                                <div class="entity-content">
+                                    <h6>Medications</h6>
+                                    <p>{{ ', '.join(report_entities.medications) }}</p>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <form action="{{ url_for('main.select_agent') }}" method="POST">
+                        <div class="agent-options mb-4">
+                            <label class="form-label">Choose Treatment Approach</label>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <div class="agent-option-card">
+                                        <input type="radio" class="btn-check" name="agent_type" id="allopathy" value="allopathy" autocomplete="off">
+                                        <label class="btn btn-outline-primary w-100 h-100" for="allopathy">
+                                            <div class="agent-avatar">
+                                                <i class="fas fa-user-md"></i>
+                                            </div>
+                                            <h5>Allopathy</h5>
+                                            <p>Conventional medical therapies based on scientific evidence</p>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="agent-option-card">
+                                        <input type="radio" class="btn-check" name="agent_type" id="homeopathy" value="homeopathy" autocomplete="off">
+                                        <label class="btn btn-outline-primary w-100 h-100" for="homeopathy">
+                                            <div class="agent-avatar">
+                                                <i class="fas fa-leaf"></i>
+                                            </div>
+                                            <h5>Homeopathy</h5>
+                                            <p>Holistic treatments focused on activating the body's healing response</p>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="agent-option-card">
+                                        <input type="radio" class="btn-check" name="agent_type" id="both" value="both" autocomplete="off" checked>
+                                        <label class="btn btn-outline-primary w-100 h-100" for="both">
+                                            <div class="agent-avatar">
+                                                <i class="fas fa-balance-scale"></i>
+                                            </div>
+                                            <h5>Combined</h5>
+                                            <p>Both perspectives to provide a comprehensive approach</p>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="query-section mb-4">
+                            <label for="query" class="form-label">Your Question (Optional)</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-question-circle"></i></span>
+                                <input type="text" class="form-control" id="query" name="query" placeholder="What are my therapy options?" value="What are my therapy options?">
+                            </div>
+                            <small class="text-muted">You can ask a specific question, or we'll provide general recommendations</small>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('main.analysis') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i> Back to Reports
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                Get Recommendations <i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

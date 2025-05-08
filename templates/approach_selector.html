@@ -1,0 +1,70 @@
+{% extends 'layout.html' %}
+
+{% block title %}Medical Approach Selector{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Medical Approach Selector</h3>
+                </div>
+                <div class="card-body">
+                    <p class="lead mb-4">
+                        Describe your health concern, and we'll recommend the most suitable medical approach:
+                        Allopathy, Homeopathy, or Ayurveda.
+                    </p>
+
+                    <form method="POST" action="{{ url_for('main.approach_selector') }}">
+                        <div class="form-group mb-4">
+                            <label for="health_query" class="form-label">Your Health Concern:</label>
+                            <textarea 
+                                class="form-control" 
+                                id="health_query" 
+                                name="health_query" 
+                                rows="4" 
+                                placeholder="Example: I have been experiencing severe headaches for the past two days."
+                                required
+                            ></textarea>
+                            <div class="form-text text-muted mt-2">
+                                Please provide details about your symptoms, how long you've had them, and their severity.
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">Get Recommendation</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer">
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <div class="mb-2"><i class="fas fa-hospital fa-2x text-primary"></i></div>
+                            <h5>Allopathy</h5>
+                            <p class="small">Conventional medicine for acute conditions</p>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-2"><i class="fas fa-seedling fa-2x text-success"></i></div>
+                            <h5>Homeopathy</h5>
+                            <p class="small">Alternative medicine for chronic conditions</p>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-2"><i class="fas fa-spa fa-2x text-warning"></i></div>
+                            <h5>Ayurveda</h5>
+                            <p class="small">Holistic approach for wellness & balance</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <p class="text-muted">
+                    <i class="fas fa-info-circle"></i> This is a preliminary recommendation only. 
+                    Always consult qualified healthcare professionals for medical advice.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

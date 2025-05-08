@@ -1,0 +1,130 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row align-items-center hero-section">
+    <div class="col-lg-6 order-lg-1 order-2">
+        <h1 class="display-4 mb-4">Precision Medicine <span class="text-gradient">Powered by AI</span></h1>
+        <p class="lead mb-4">
+            Personalized therapy recommendations based on your genomic data, pathology reports, and health profile, using the power of Large Language Models.
+        </p>
+        <div class="features-list mb-4">
+            <div class="feature-item">
+                <i class="fas fa-dna feature-icon"></i>
+                <div>
+                    <h5>Genomic Analysis</h5>
+                    <p>Extract insights from your genomic data and pathology reports</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-user-md feature-icon"></i>
+                <div>
+                    <h5>Dual Perspectives</h5>
+                    <p>Get recommendations from both allopathic and homeopathic agents</p>
+                </div>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-chart-line feature-icon"></i>
+                <div>
+                    <h5>Personalized Therapy</h5>
+                    <p>Tailored therapy suggestions based on your unique health profile</p>
+                </div>
+            </div>
+        </div>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+            <a href="{{ url_for('main.approach_selector') }}" class="btn btn-success btn-lg px-4 me-md-2">
+                <i class="fas fa-search-plus me-2"></i> Find Best Approach
+            </a>
+            <a href="{{ url_for('main.profile') }}" class="btn btn-primary btn-lg px-4 me-md-2">Get Started</a>
+            <a href="#how-it-works" class="btn btn-outline-secondary btn-lg px-4">Learn More</a>
+        </div>
+    </div>
+    <div class="col-lg-6 order-lg-2 order-1 mb-lg-0 mb-5">
+        <div class="hero-image-container">
+            <img src="{{ url_for('static', filename='images/genomic_medicine.svg') }}" alt="Precision Medicine Illustration" class="hero-image">
+        </div>
+    </div>
+</div>
+
+<div id="how-it-works" class="how-it-works-section mt-5 pt-5">
+    <h2 class="text-center mb-5">How It Works</h2>
+    
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <h5>Create Profile</h5>
+                <p>Enter your health information and upload pathology reports</p>
+                <i class="fas fa-user-circle step-icon"></i>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <h5>AI Analysis</h5>
+                <p>Our AI extracts and analyzes genomic data from your reports</p>
+                <i class="fas fa-microchip step-icon"></i>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <h5>Choose Agent</h5>
+                <p>Select allopathy, homeopathy, or both perspectives</p>
+                <i class="fas fa-user-md step-icon"></i>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="step-card">
+                <div class="step-number">4</div>
+                <h5>Get Recommendations</h5>
+                <p>Receive personalized therapy suggestions and insights</p>
+                <i class="fas fa-clipboard-list step-icon"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="features-section mt-5 pt-5">
+    <h2 class="text-center mb-5">Key Features</h2>
+    
+    <div class="row gx-5">
+        <div class="col-lg-4 mb-4">
+            <div class="feature-card h-100">
+                <div class="feature-icon-container">
+                    <i class="fas fa-dna"></i>
+                </div>
+                <h4>Genomic Analysis</h4>
+                <p>Extract crucial insights from your genomic data and pathology reports using advanced AI models.</p>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="feature-card h-100">
+                <div class="feature-icon-container">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h4>Multi-Agent AI</h4>
+                <p>Two specialized AI agents provide both allopathic and homeopathic treatment perspectives.</p>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="feature-card h-100">
+                <div class="feature-icon-container">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <h4>Therapy Ranking</h4>
+                <p>Compare and evaluate treatment options based on efficacy, compatibility, safety, and cost.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="cta-section mt-5 py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto text-center">
+            <h2 class="mb-3">Ready to Get Personalized Health Insights?</h2>
+            <p class="mb-4">Create your profile and upload your pathology reports to start receiving personalized therapy recommendations.</p>
+            <a href="{{ url_for('main.profile') }}" class="btn btn-primary btn-lg">Get Started Now</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
