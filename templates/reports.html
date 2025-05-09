@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="reports-section">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card shadow mb-4">
+                <div class="card-header">
+                    <h3 class="mb-0">
+                        <i class="fas fa-file-medical me-2"></i>
+                        Your Medical Reports
+                    </h3>
+                </div>
+                <div class="card-body">
+                    {% if reports %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Report Title</th>
+                                    <th>Date Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for report in reports %}
+                                <tr>
+                                    <td>{{ report.title }}</td>
+                                    <td>{{ report.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>
+                                        <a href="{{ url_for('main.results', report_id=report.id) }}" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-eye me-1"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        You don't have any reports yet. Start by creating a profile and uploading a pathology report.
+                    </div>
+                    <div class="text-center mt-4">
+                        <a href="{{ url_for('main.profile') }}" class="btn btn-primary">
+                            <i class="fas fa-user-plus me-2"></i> Create Profile
+                        </a>
+                        <a href="{{ url_for('main.analysis') }}" class="btn btn-success ms-2">
+                            <i class="fas fa-file-upload me-2"></i> Upload Report
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

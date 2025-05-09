@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 # API keys for different LLM providers
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "AIzaSyBlE8wr4_lx9MPfE8Cc7aqcocuYLMMbwKY")
 
 class TreatmentAgent:
     """Base class for treatment philosophy agents"""
@@ -172,7 +172,7 @@ class TreatmentAgent:
             import google.generativeai as genai
             
             # Configure the Gemini API
-            genai.configure(api_key=GEMINI_API_KEY)
+            genai.configure(api_key="AIzaSyBlE8wr4_lx9MPfE8Cc7aqcocuYLMMbwKY")
             
             # Use Gemini API to generate content with the Gemini Pro model
             model = genai.GenerativeModel('gemini-2.0-flash')
@@ -477,7 +477,7 @@ def select_approach_with_agent(health_query: str) -> tuple:
             import google.generativeai as genai
             
             # Configure the Gemini API
-            genai.configure(api_key=GEMINI_API_KEY)
+            genai.configure(api_key="AIzaSyBlE8wr4_lx9MPfE8Cc7aqcocuYLMMbwKY")
             
             # Use Gemini API to generate content with the Gemini Pro model
             model = genai.GenerativeModel('gemini-2.0-flash')

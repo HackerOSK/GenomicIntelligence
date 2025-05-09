@@ -9,11 +9,11 @@ import google.generativeai as genai
 logger = logging.getLogger(__name__)
 
 # Initialize Gemini client
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "AIzaSyBlE8wr4_lx9MPfE8Cc7aqcocuYLMMbwKY")
 
 # Configure the Gemini API
 if GEMINI_API_KEY:
-    genai.configure(api_key=GEMINI_API_KEY)
+    genai.configure(api_key="AIzaSyBlE8wr4_lx9MPfE8Cc7aqcocuYLMMbwKY")
 
 
 def get_therapy_recommendations(agent_type: str, profile: Dict[str, Any],
@@ -108,6 +108,9 @@ def get_therapy_recommendations(agent_type: str, profile: Dict[str, Any],
     except Exception as e:
         logger.error(f"Error getting recommendations from Gemini: {str(e)}")
         logger.error(f"Full error details: {e}")
+        # Log more specific information about the API key (without revealing the actual key)
+        logger.error(f"API key configured: {'Yes' if GEMINI_API_KEY else 'No'}")
+        logger.error(f"API key length: {len(GEMINI_API_KEY) if GEMINI_API_KEY else 0}")
         return _get_mock_recommendations(agent_type)
 
 
@@ -452,3 +455,5 @@ def _rule_based_approach_selection(query: str) -> tuple:
         return "Homeopathy", "Ideal for chronic or long-term health issues."
     else:
         return "Ayurveda", "Recommended for lifestyle balance and holistic wellness."
+
+

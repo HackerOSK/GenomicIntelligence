@@ -1,6 +1,8 @@
 import logging
 import os
 from flask import Blueprint, request, jsonify, send_file, session, current_app
+from extensions import db  # Import db from extensions, not models
+from models import User, Profile, Report, Therapy  # Import only the models from models
 from utils.ner_extraction import extract_entities_from_text
 from utils.gemini_integration import get_therapy_recommendations, select_medical_approach
 from utils.therapy_ranking import rank_therapies
@@ -142,3 +144,4 @@ def export_report():
     except Exception as e:
         logger.error(f"Error generating PDF report: {str(e)}")
         return jsonify({'error': str(e)}), 500
+

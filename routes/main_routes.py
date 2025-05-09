@@ -3,11 +3,13 @@ import os
 import re
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify
 from werkzeug.utils import secure_filename
-from models import db, User, Profile, Report, Therapy
+from extensions import db  # Import db from extensions, not models
+from models import User, Profile, Report, Therapy  # Import only the models from models
 from utils.ner_extraction import extract_entities_from_text
 from utils.gemini_integration import get_therapy_recommendations, select_medical_approach
 from utils.therapy_ranking import rank_therapies
 from utils.pdf_processor import extract_text_from_pdf, save_uploaded_pdf
+from flask_login import login_required, current_user
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -21,6 +23,7 @@ def index():
     return render_template('index.html')
 
 @main_bp.route('/profile', methods=['GET', 'POST'])
+@login_required
 def profile():
     """Handle user profile creation and updates"""
     if request.method == 'POST':
@@ -41,6 +44,7 @@ def profile():
     return render_template('profile.html', profile=session.get('profile', {}))
 
 @main_bp.route('/analysis', methods=['GET', 'POST'])
+@login_required
 def analysis():
     """Handle pathology report upload and analysis"""
     if request.method == 'POST':
@@ -189,6 +193,33 @@ def results():
     profile = session.get('profile', {})
     report_entities = session.get('report', {}).get('extracted_entities', {})
     
+    # Debug the therapies data
+    logger.debug(f"Therapies data for results page: {therapies}")
+    
+    # Ensure therapies is a list
+    if not isinstance(therapies, list):
+        logger.warning(f"Therapies is not a list: {type(therapies)}. Converting to empty list.")
+        therapies = []
+    
+    # Ensure each therapy has the required fields
+    for therapy in therapies:
+        if not isinstance(therapy, dict):
+            logger.warning(f"Therapy is not a dict: {type(therapy)}. Skipping.")
+            continue
+            
+        # Ensure required fields exist with default values
+        therapy.setdefault('therapy_type', 'unknown')
+        therapy.setdefault('therapy_name', 'Unknown Therapy')
+        therapy.setdefault('description', 'No description available')
+        therapy.setdefault('efficacy_score', 0)
+        therapy.setdefault('compatibility_score', 0)
+        therapy.setdefault('safety_score', 0)
+        therapy.setdefault('cost_score', 0)
+        therapy.setdefault('overall_score', 0)
+        therapy.setdefault('side_effects', [])
+        therapy.setdefault('contraindications', [])
+        therapy.setdefault('supporting_evidence', '')
+    
     return render_template(
         'results.html',
         agent_type=agent_type,
@@ -196,3 +227,19 @@ def results():
         profile=profile,
         entities=report_entities
     )
+
+@main_bp.route('/reports')
+@login_required
+def reports():
+    """Display user's reports history"""
+    # Get reports for the current user
+    user_reports = Report.query.filter_by(user_id=current_user.id).order_by(Report.created_at.desc()).all()
+    
+    return render_template(
+        'reports.html',
+        reports=user_reports
+    )
+
+
+
+

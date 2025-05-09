@@ -8,33 +8,43 @@
  * @param {Array} therapyData - Array of therapy recommendations
  */
 function initTherapyComparisonChart(therapyData) {
-    // If no therapy data or Chart not available, return
-    if (!therapyData || therapyData.length === 0 || typeof Chart === 'undefined') {
-        console.warn('No therapy data available or Chart.js not loaded');
+    console.log("initTherapyComparisonChart called with data:", therapyData);
+    
+    // If no therapy data, return
+    if (!therapyData || !Array.isArray(therapyData) || therapyData.length === 0) {
+        console.warn('No therapy data available or data is not an array');
         return;
+    }
+    
+    // Check if Chart.js is available
+    if (typeof Chart === 'undefined') {
+        console.error('Chart.js not loaded');
+        throw new Error('Chart.js library is not loaded. Please check your network connection or include the Chart.js script.');
     }
 
     // Check if we have a canvas element
     const ctx = document.getElementById('therapyComparisonChart');
     if (!ctx) {
         console.warn('Chart canvas element not found');
-        return;
+        throw new Error('Chart canvas element not found. Please check the HTML structure.');
     }
+    
+    console.log("Canvas element found:", ctx);
+    
+    // Extract therapy names for labels
+    const labels = therapyData.map(therapy => therapy.therapy_name || 'Unknown');
+    console.log("Chart labels:", labels);
 
-    // Extract therapy names and scores
-    const labels = therapyData.map(therapy => {
-        // Truncate long therapy names
-        let name = therapy.therapy_name;
-        if (name.length > 20) {
-            name = name.substring(0, 17) + '...';
-        }
-        return `${name} (${therapy.therapy_type})`;
-    });
-
-    const efficacyScores = therapyData.map(therapy => therapy.efficacy_score);
-    const compatibilityScores = therapyData.map(therapy => therapy.compatibility_score);
-    const safetyScores = therapyData.map(therapy => therapy.safety_score);
-    const costScores = therapyData.map(therapy => therapy.cost_score);
+    // Extract scores for each category with fallbacks
+    const efficacyScores = therapyData.map(therapy => Number(therapy.efficacy_score || 0));
+    const compatibilityScores = therapyData.map(therapy => Number(therapy.compatibility_score || 0));
+    const safetyScores = therapyData.map(therapy => Number(therapy.safety_score || 0));
+    const costScores = therapyData.map(therapy => Number(therapy.cost_score || 0));
+    
+    console.log("Efficacy scores:", efficacyScores);
+    console.log("Compatibility scores:", compatibilityScores);
+    console.log("Safety scores:", safetyScores);
+    console.log("Cost scores:", costScores);
 
     // Determine if dark mode is active
     const isDarkMode = document.body.classList.contains('dark-mode');
@@ -42,217 +52,213 @@ function initTherapyComparisonChart(therapyData) {
     const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
 
     // Create the chart
-    const chart = new Chart(ctx, {
-        type: 'radar',
-        data: {
-            labels: labels,
-            datasets: [
-                {
-                    label: 'Efficacy',
-                    data: efficacyScores,
-                    backgroundColor: 'rgba(0, 184, 169, 0.2)',
-                    borderColor: 'rgb(0, 184, 169)',
-                    pointBackgroundColor: 'rgb(0, 184, 169)',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgb(0, 184, 169)'
-                },
-                {
-                    label: 'Compatibility',
-                    data: compatibilityScores,
-                    backgroundColor: 'rgba(57, 160, 237, 0.2)',
-                    borderColor: 'rgb(57, 160, 237)',
-                    pointBackgroundColor: 'rgb(57, 160, 237)',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgb(57, 160, 237)'
-                },
-                {
-                    label: 'Safety',
-                    data: safetyScores,
-                    backgroundColor: 'rgba(246, 201, 14, 0.2)',
-                    borderColor: 'rgb(246, 201, 14)',
-                    pointBackgroundColor: 'rgb(246, 201, 14)',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgb(246, 201, 14)'
-                },
-                {
-                    label: 'Cost',
-                    data: costScores,
-                    backgroundColor: 'rgba(44, 123, 229, 0.2)',
-                    borderColor: 'rgb(44, 123, 229)',
-                    pointBackgroundColor: 'rgb(44, 123, 229)',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgb(44, 123, 229)'
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                r: {
-                    min: 0,
-                    max: 100,
-                    ticks: {
-                        stepSize: 20,
-                        color: isDarkMode ? '#95aac9' : '#95aac9'
+    try {
+        // Destroy existing chart if it exists
+        if (window.therapyComparisonChart instanceof Chart) {
+            window.therapyComparisonChart.destroy();
+        }
+        
+        const chart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Efficacy',
+                        data: efficacyScores,
+                        backgroundColor: 'rgba(0, 184, 169, 0.2)',
+                        borderColor: 'rgb(0, 184, 169)',
+                        pointBackgroundColor: 'rgb(0, 184, 169)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(0, 184, 169)'
                     },
-                    grid: {
-                        color: gridColor
+                    {
+                        label: 'Compatibility',
+                        data: compatibilityScores,
+                        backgroundColor: 'rgba(57, 160, 237, 0.2)',
+                        borderColor: 'rgb(57, 160, 237)',
+                        pointBackgroundColor: 'rgb(57, 160, 237)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(57, 160, 237)'
                     },
-                    angleLines: {
-                        color: gridColor
+                    {
+                        label: 'Safety',
+                        data: safetyScores,
+                        backgroundColor: 'rgba(246, 201, 14, 0.2)',
+                        borderColor: 'rgb(246, 201, 14)',
+                        pointBackgroundColor: 'rgb(246, 201, 14)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(246, 201, 14)'
                     },
-                    pointLabels: {
-                        color: textColor,
-                        font: {
-                            size: 12
+                    {
+                        label: 'Cost',
+                        data: costScores,
+                        backgroundColor: 'rgba(44, 123, 229, 0.2)',
+                        borderColor: 'rgb(44, 123, 229)',
+                        pointBackgroundColor: 'rgb(44, 123, 229)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgb(44, 123, 229)'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        min: 0,
+                        max: 100,
+                        ticks: {
+                            stepSize: 20,
+                            color: isDarkMode ? '#95aac9' : '#95aac9'
+                        },
+                        grid: {
+                            color: gridColor
+                        },
+                        angleLines: {
+                            color: gridColor
+                        },
+                        pointLabels: {
+                            color: textColor,
+                            font: {
+                                size: 12
+                            }
                         }
                     }
-                }
-            },
-            plugins: {
-                legend: {
-                    position: 'top',
-                    labels: {
-                        color: textColor,
-                        font: {
-                            size: 12
-                        },
-                        boxWidth: 15,
-                        padding: 15
-                    }
                 },
-                tooltip: {
-                    backgroundColor: isDarkMode ? '#283142' : '#ffffff',
-                    titleColor: isDarkMode ? '#ffffff' : '#12263f',
-                    bodyColor: isDarkMode ? '#ffffff' : '#12263f',
-                    borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
-                    borderWidth: 1,
-                    padding: 10,
-                    boxPadding: 5,
-                    usePointStyle: true,
-                    callbacks: {
-                        title: function(tooltipItems) {
-                            const idx = tooltipItems[0].dataIndex;
-                            return therapyData[idx].therapy_name;
-                        },
-                        label: function(context) {
-                            const label = context.dataset.label || '';
-                            return `${label}: ${context.raw}/100`;
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            color: textColor,
+                            font: {
+                                size: 12
+                            },
+                            boxWidth: 15,
+                            padding: 15
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: isDarkMode ? '#283142' : '#ffffff',
+                        titleColor: isDarkMode ? '#ffffff' : '#12263f',
+                        bodyColor: isDarkMode ? '#ffffff' : '#12263f',
+                        borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                        borderWidth: 1,
+                        padding: 10,
+                        boxPadding: 5,
+                        usePointStyle: true,
+                        callbacks: {
+                            title: function(tooltipItems) {
+                                const idx = tooltipItems[0].dataIndex;
+                                return therapyData[idx].therapy_name || 'Unknown';
+                            },
+                            label: function(context) {
+                                const label = context.dataset.label || '';
+                                return `${label}: ${context.raw}/100`;
+                            }
                         }
                     }
                 }
             }
-        }
-    });
-
-    // Store the chart instance for potential reuse or updates
-    window.therapyComparisonChart = chart;
+        });
+        
+        console.log("Chart successfully created:", chart);
+        
+        // Store the chart instance for potential reuse or updates
+        window.therapyComparisonChart = chart;
+        
+        return chart;
+    } catch (error) {
+        console.error("Error creating chart:", error);
+        throw error;
+    }
 }
 
 /**
- * Initialize score circles with animation
+ * Initialize the score circles
  */
 function initScoreCircles() {
+    console.log("Initializing score circles");
     const scoreCircles = document.querySelectorAll('.score-circle');
     
+    if (!scoreCircles || scoreCircles.length === 0) {
+        console.warn("No score circles found");
+        return;
+    }
+    
+    console.log(`Found ${scoreCircles.length} score circles`);
+    
     scoreCircles.forEach(circle => {
-        const score = parseFloat(circle.getAttribute('data-score'));
-        
-        // Calculate the percentage of the circle to fill (based on score out of 100)
-        const percentage = score / 100;
-        
-        // Calculate the clip-path based on the percentage
-        animateScoreCircle(circle, percentage);
-        
-        // Also update the circle color based on the score
-        updateScoreCircleColor(circle, score);
+        try {
+            const score = parseInt(circle.getAttribute('data-score') || '0');
+            const circumference = 2 * Math.PI * 38; // 38 is the radius of the circle
+            const dashoffset = circumference - (score / 100) * circumference;
+            
+            // Create SVG for circle
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('width', '90');
+            svg.setAttribute('height', '90');
+            svg.setAttribute('viewBox', '0 0 90 90');
+            svg.classList.add('score-svg');
+            
+            // Background circle
+            const bgCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            bgCircle.setAttribute('cx', '45');
+            bgCircle.setAttribute('cy', '45');
+            bgCircle.setAttribute('r', '38');
+            bgCircle.setAttribute('fill', 'none');
+            bgCircle.setAttribute('stroke', '#e9ecef');
+            bgCircle.setAttribute('stroke-width', '6');
+            
+            // Progress circle
+            const progressCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            progressCircle.setAttribute('cx', '45');
+            progressCircle.setAttribute('cy', '45');
+            progressCircle.setAttribute('r', '38');
+            progressCircle.setAttribute('fill', 'none');
+            progressCircle.setAttribute('stroke', getScoreColor(score));
+            progressCircle.setAttribute('stroke-width', '6');
+            progressCircle.setAttribute('stroke-dasharray', circumference);
+            progressCircle.setAttribute('stroke-dashoffset', dashoffset);
+            progressCircle.setAttribute('transform', 'rotate(-90 45 45)');
+            
+            svg.appendChild(bgCircle);
+            svg.appendChild(progressCircle);
+            
+            // Get the score value element
+            const scoreValue = circle.querySelector('.score-value');
+            
+            // Clear the circle and append the SVG and score value
+            circle.innerHTML = '';
+            circle.appendChild(svg);
+            if (scoreValue) {
+                circle.appendChild(scoreValue.cloneNode(true));
+            } else {
+                const newScoreValue = document.createElement('span');
+                newScoreValue.classList.add('score-value');
+                newScoreValue.textContent = score;
+                circle.appendChild(newScoreValue);
+            }
+        } catch (error) {
+            console.error("Error initializing score circle:", error);
+        }
     });
 }
 
 /**
- * Animate the score circle filling effect
- * @param {HTMLElement} circle - The score circle element
- * @param {number} targetPercentage - The percentage to fill (0-1)
+ * Get color based on score
+ * @param {number} score - The score value
+ * @returns {string} - Color code
  */
-function animateScoreCircle(circle, targetPercentage) {
-    // Start from 0
-    let currentPercentage = 0;
-    
-    // Get the before pseudo-element for the clip-path
-    const circleBeforePseudo = circle.querySelector('::before');
-    
-    // Animation duration in ms
-    const duration = 1000;
-    const fps = 60;
-    const frameDuration = 1000 / fps;
-    const frames = duration / frameDuration;
-    const increment = targetPercentage / frames;
-    
-    // Animate the fill using requestAnimationFrame for smooth animation
-    function animate() {
-        if (currentPercentage < targetPercentage) {
-            currentPercentage += increment;
-            
-            if (currentPercentage > targetPercentage) {
-                currentPercentage = targetPercentage;
-            }
-            
-            updateScoreCircleFill(circle, currentPercentage);
-            requestAnimationFrame(animate);
-        }
-    }
-    
-    // Start the animation
-    requestAnimationFrame(animate);
-}
-
-/**
- * Update the score circle fill based on percentage
- * @param {HTMLElement} circle - The score circle element
- * @param {number} percentage - The percentage to fill (0-1)
- */
-function updateScoreCircleFill(circle, percentage) {
-    // Calculate the clip-path polygon points for the circle fill
-    // This is a complex calculation to create a circular reveal effect
-    // For simplicity, we'll use a basic approach with conic-gradient
-    
-    const degrees = percentage * 360;
-    circle.style.background = `conic-gradient(var(--primary-color) ${degrees}deg, transparent 0deg)`;
-}
-
-/**
- * Update the score circle color based on the score value
- * @param {HTMLElement} circle - The score circle element
- * @param {number} score - The score value (0-100)
- */
-function updateScoreCircleColor(circle, score) {
-    let color;
-    
-    // Color scale based on score range
-    if (score >= 90) {
-        color = 'var(--success-color)';  // Excellent
-    } else if (score >= 75) {
-        color = '#4cc9f0';  // Good
-    } else if (score >= 60) {
-        color = 'var(--primary-color)';  // Average
-    } else if (score >= 40) {
-        color = 'var(--warning-color)';  // Below average
-    } else {
-        color = 'var(--danger-color)';  // Poor
-    }
-    
-    // Update the before element's border color
-    // Since we can't directly modify pseudo-elements with JS,
-    // we'll add a custom property to the element that the CSS can use
-    circle.style.setProperty('--score-color', color);
-    
-    // For the demo, we'll directly set the border color of the circle
-    circle.style.borderColor = color;
+function getScoreColor(score) {
+    if (score >= 80) return '#00b8a9'; // High score - teal
+    if (score >= 60) return '#39a0ed'; // Good score - blue
+    if (score >= 40) return '#f6c90e'; // Medium score - yellow
+    return '#f25f5c'; // Low score - red
 }
 
 /**
@@ -477,3 +483,5 @@ function showNotification(message, type = 'info') {
         }, 5000);
     }
 }
+
+

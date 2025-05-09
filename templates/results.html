@@ -82,7 +82,13 @@
                     <!-- Comparison Chart -->
                     <div class="comparison-chart mb-4">
                         <h5>Therapy Comparison</h5>
-                        <div class="chart-container">
+                        <div class="chart-container" style="position: relative; height: 400px; width: 100%;">
+                            <div id="chart-loading" class="text-center py-5">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2">Loading chart...</p>
+                            </div>
                             <canvas id="therapyComparisonChart"></canvas>
                         </div>
                     </div>
@@ -218,15 +224,57 @@
 {% endblock %}
 
 {% block scripts %}
+<!-- Make sure Chart.js is loaded before your visualization script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 <script src="{{ url_for('static', filename='js/therapy_visualization.js') }}"></script>
 <script>
-    // Initialize therapy data for visualization
-    const therapyData = {{ therapies|tojson }};
+    // Debug the therapies data
+    console.log("Raw therapies data:", {{ therapies|tojson|safe }});
+    
+    // Initialize therapy data for visualization with fallback
+    const therapyData = {{ therapies|default([])|tojson|safe }};
     
     // Initialize chart when DOM is loaded
     document.addEventListener('DOMContentLoaded', function() {
-        initTherapyComparisonChart(therapyData);
-        initScoreCircles();
+        // Hide loading indicator when chart is initialized
+        const loadingIndicator = document.getElementById('chart-loading');
+        
+        try {
+            // Check if we have valid data
+            if (!therapyData || therapyData.length === 0) {
+                console.warn("No therapy data available");
+                if (loadingIndicator) {
+                    loadingIndicator.innerHTML = '<div class="alert alert-warning">No therapy data available to display.</div>';
+                }
+                return;
+            }
+            
+            console.log("Initializing therapy comparison chart with data:", therapyData);
+            
+            // Initialize the chart
+            initTherapyComparisonChart(therapyData);
+            
+            // Initialize score circles
+            if (typeof initScoreCircles === 'function') {
+                initScoreCircles();
+            } else {
+                console.warn("initScoreCircles function not found");
+            }
+            
+            // Hide loading indicator after chart is initialized
+            if (loadingIndicator) {
+                loadingIndicator.style.display = 'none';
+            }
+        } catch (error) {
+            console.error("Error initializing chart:", error);
+            // Show error message instead of loading indicator
+            if (loadingIndicator) {
+                loadingIndicator.innerHTML = `<div class="alert alert-danger">Error loading chart: ${error.message}</div>`;
+            }
+        }
     });
 </script>
 {% endblock %}
+
+
+

@@ -1,4 +1,4 @@
-from app import db
+# Import models directly
 from .user import User
 from .profile import Profile
 from .report import Report
